@@ -51,6 +51,39 @@ comparisons, use a process/container setup that blocks reads outside the
 prepared workspace and brokers tool calls separately. Runs without that
 boundary should be labeled exploratory pilots.
 
+For a fully logged **exploratory local-model pilot**, `runner/local_agent.py`
+can run all 24 tasks across the three conditions through Ollama:
+
+```sh
+ollama serve
+python3 runner/local_agent.py --model qwen3:14b --group runs/local-pilot-001
+```
+
+The adapter gives the model only `list_files`, `read_file`, `write_file`,
+`run_tests`, `ask_user`, and `probe_provider`. It records messages, tool
+requests, and tool results in each run's `control/agent_trace.jsonl`, plus
+functional grades and a group manifest. It uses temperature 0 and a fixed
+seed, and randomizes condition order within each task. Its file tool restricts
+reads to the prepared workspace and writes to existing top-level project
+Python modules. Visible and private grading still execute model-written
+Python without OS process isolation, and one local model with one repeat does
+not establish general effects. Do not mix its results with a hosted model's
+results in one comparison.
+
+After the run, generate two distinct summaries:
+
+```sh
+python3 runner/report.py runs/local-pilot-001
+python3 runner/trace_metrics.py runs/local-pilot-001
+```
+
+The first reports functional pass and tool-use counts. The second checks
+task-specific observable evidence: direct action, reading established code,
+a discriminating provider probe, or a targeted question before editing. Its
+`source_evidence` field is an automated trace metric, **not** a manual judgment
+of decision accuracy or question necessity. Review traces before making those
+stronger claims.
+
 ## Review a trace
 
 Write an annotation JSON file such as:

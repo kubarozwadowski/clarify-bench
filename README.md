@@ -13,9 +13,11 @@ We evaluate whether coding agents resolve missing information by acting, inspect
 
 All 24 tasks are implemented drafts: six per category.
 
-The benchmark fixtures pass synthetic self-checks, but no agent evaluation
-results have been collected yet. See [the pilot evaluation protocol](docs/evaluation-protocol.md)
-for the three comparison conditions, full-trace review, and result reporting.
+The benchmark fixtures pass synthetic self-checks. An exploratory local-model
+pilot on all 24 tasks is reported in [pilot results](docs/pilot-results-2026-11-20.md).
+See [the evaluation protocol](docs/evaluation-protocol.md) for the three
+comparison conditions, full-trace review, and result reporting. The local
+model adapter is at `runner/local_agent.py`.
 
 | # | Task | Description |
 |---|---|---|
