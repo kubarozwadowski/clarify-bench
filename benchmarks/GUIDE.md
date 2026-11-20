@@ -1,7 +1,9 @@
 # Starter benchmark protocol
 
-These four tasks are draft pilots, not a validated benchmark. Use them to agree
-on the format before writing more tasks. The existing root README is preserved.
+Tasks 1–12 (001–003 in each category) are implemented draft pilots. Their
+correctness checks are synthetic, not agent evaluation results. Review the
+labels and evidence boundaries before using them as a research benchmark.
+Tasks 13–24 are planned in docs/implementation-plan.md.
 
 ## Quick start (from the repository root)
 
@@ -62,6 +64,44 @@ offline after investigation; it cannot call the provider from submitted code.
 Probe decisive values, including positive/negative ties and non-ties. This pilot
 uses one fixed provider fixture. A later benchmark should vary fixtures so a
 memorized default is less likely to pass by luck.
+
+## Additional provider probes
+
+Prepare fresh runs for the new experiment tasks:
+
+```sh
+python3 runner/benchmark.py prepare experiment_002 --run runs/paging
+python3 runner/benchmark.py probe --run runs/paging --cursor 5
+python3 runner/benchmark.py prepare experiment_003 --run runs/encoding
+python3 runner/benchmark.py probe --run runs/encoding --value "a b+c/"
+```
+
+The generic JSON form maps directly to the tools named in task prompts:
+
+```sh
+python3 runner/benchmark.py probe --run runs/paging --input '{"cursor":5}'
+python3 runner/benchmark.py probe --run runs/encoding --input '{"value":"a b+c/"}'
+python3 runner/benchmark.py probe --run runs/rounding --input '{"amount":"1.005"}'
+```
+
+`provider_page` returns cursor and records; `provider_encode` returns value and
+encoded; `provider_round` returns amount and rounded. Invalid inputs or tools
+unavailable for a task return an error and are not recorded as successful probes.
+For empty query strings use `--value ""`. Negative rounding amounts can be supplied
+as `--amount=-1.005` or through `--input` to avoid shell/argument ambiguity.
+
+New private fixtures use a `provider` object in task.json: `kind: "page"` with
+`ids` and `boundary`, or `kind: "encode"` with `space_encoding`. Existing rounding
+metadata (`provider_rounding`) remains supported. Extend the private
+`provider_reply` dispatcher for later experiment tasks; keep provider source
+outside the agent workspace.
+
+The verification suite covers all 12 tasks: unfinished starters fail, correct
+reference solutions pass, and plausible incorrect solutions fail. Reference
+solutions in `runner/tests/reference_solutions.json` are researcher-only and
+must never be included in an agent workspace. Self-checks write temporary results,
+not experiment data. Grading uses the original visible tests plus private tests;
+removing tests in a workspace cannot remove those checks.
 
 ## Information boundary
 

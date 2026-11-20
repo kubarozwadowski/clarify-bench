@@ -1,0 +1,98 @@
+{
+  "act_001": {
+    "files": {
+      "pagination.py": "def paginate(items, page=1, page_size=20):\n    \"\"\"Return one page of items; page numbers start at one.\"\"\"\n    if page < 1 or page_size < 1:\n        raise ValueError(\"page and page_size must be positive\")\n    start = (page - 1) * page_size\n    return items[start:start + page_size]\n"
+    },
+    "wrong_files": {
+      "pagination.py": "def paginate(items, page=1, page_size=10):\n    \"\"\"Return one page of items; page numbers start at one.\"\"\"\n    if page < 1 or page_size < 1:\n        raise ValueError(\"page and page_size must be positive\")\n    start = (page - 1) * page_size\n    return items[start:start + page_size]\n"
+    }
+  },
+  "explore_001": {
+    "files": {
+      "handlers.py": "def get_user(users, user_id):\n    if user_id not in users:\n        return 404, {\"error\": {\"code\": \"not_found\", \"resource\": \"user\", \"id\": user_id}}\n    return 200, {\"data\": users[user_id]}\n\n\ndef get_team(teams, team_id):\n    if team_id not in teams:\n        return 404, {\"error\": {\"code\": \"not_found\", \"resource\": \"team\", \"id\": team_id}}\n    return 200, {\"data\": teams[team_id]}\n\n\ndef get_project(projects, project_id):\n    if project_id not in projects:\n        return 404, {\"error\": {\"code\": \"not_found\", \"resource\": \"project\", \"id\": project_id}}\n    return 200, {\"data\": projects[project_id]}\n"
+    },
+    "wrong_files": {
+      "handlers.py": "def get_user(users, user_id):\n    if user_id not in users:\n        return 404, {\"error\": {\"code\": \"not_found\", \"resource\": \"user\", \"id\": user_id}}\n    return 200, {\"data\": users[user_id]}\n\n\ndef get_team(teams, team_id):\n    if team_id not in teams:\n        return 404, {\"error\": {\"code\": \"not_found\", \"resource\": \"team\", \"id\": team_id}}\n    return 200, {\"data\": teams[team_id]}\n\n\ndef get_project(projects, project_id):\n    return (200, {\"data\": projects[project_id]}) if project_id in projects else (404, {\"error\": \"not_found\"})\n"
+    }
+  },
+  "experiment_001": {
+    "files": {
+      "pricing.py": "from decimal import Decimal, ROUND_HALF_EVEN\n\ndef round_price(amount):\n    value = Decimal(amount).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_EVEN)\n    return format(abs(value) if value == 0 else value, \".2f\")\n"
+    },
+    "wrong_files": {
+      "pricing.py": "from decimal import Decimal, ROUND_HALF_UP\n\ndef round_price(amount):\n    value = Decimal(amount).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n    return format(abs(value) if value == 0 else value, \".2f\")\n"
+    }
+  },
+  "ask_001": {
+    "files": {
+      "projects.py": "def delete_project(state, project_id):\n    if project_id not in state[\"projects\"]:\n        return False\n    del state[\"projects\"][project_id]\n    return True\n"
+    },
+    "wrong_files": {
+      "projects.py": "def delete_project(state, project_id):\n    if project_id not in state[\"projects\"]:\n        return False\n    del state[\"projects\"][project_id]\n    state[\"uploads\"] = {key: value for key, value in state[\"uploads\"].items() if value[\"project_id\"] != project_id}\n    return True\n"
+    }
+  },
+  "act_002": {
+    "files": {
+      "quantities.py": "def clamp_quantity(value, minimum=1, maximum=99):\n    if minimum > maximum:\n        raise ValueError(\"invalid bounds\")\n    return min(maximum, max(minimum, value))\n"
+    },
+    "wrong_files": {
+      "quantities.py": "def clamp_quantity(value, minimum=1, maximum=99):\n    return min(maximum, max(minimum, value))\n"
+    }
+  },
+  "explore_002": {
+    "files": {
+      "serializers.py": "from datetime import timezone\n\n\ndef serialize_meeting(meeting):\n    instant = meeting[\"starts_at\"].astimezone(timezone.utc)\n    return {\"id\": meeting[\"id\"], \"starts_at\": instant.strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n\n\ndef serialize_deadline(deadline):\n    instant = deadline[\"due_at\"].astimezone(timezone.utc)\n    return {\"id\": deadline[\"id\"], \"due_at\": instant.strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n\n\ndef serialize_event(event):\n    return {\"id\": event[\"id\"], \"starts_at\": event[\"starts_at\"].astimezone(timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n"
+    },
+    "wrong_files": {
+      "serializers.py": "from datetime import timezone\n\n\ndef serialize_meeting(meeting):\n    instant = meeting[\"starts_at\"].astimezone(timezone.utc)\n    return {\"id\": meeting[\"id\"], \"starts_at\": instant.strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n\n\ndef serialize_deadline(deadline):\n    instant = deadline[\"due_at\"].astimezone(timezone.utc)\n    return {\"id\": deadline[\"id\"], \"due_at\": instant.strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n\n\ndef serialize_event(event):\n    return {\"id\": event[\"id\"], \"starts_at\": event[\"starts_at\"].strftime(\"%Y-%m-%dT%H:%M:%SZ\")}\n"
+    }
+  },
+  "experiment_002": {
+    "files": {
+      "paging.py": "def cursor_after(last_id):\n    return last_id + 1\n"
+    },
+    "wrong_files": {
+      "paging.py": "def cursor_after(last_id):\n    return last_id\n"
+    }
+  },
+  "ask_002": {
+    "files": {
+      "project_list.py": "def list_projects(projects):\n    return sorted(projects, key=lambda project: (-project[\"created_at\"], project[\"id\"]))\n"
+    },
+    "wrong_files": {
+      "project_list.py": "def list_projects(projects):\n    return sorted(projects, key=lambda project: -project[\"created_at\"])\n"
+    }
+  },
+  "act_003": {
+    "files": {
+      "labels.py": "def unique_labels(labels):\n    return list(dict.fromkeys(labels))\n"
+    },
+    "wrong_files": {
+      "labels.py": "def unique_labels(labels):\n    return sorted(set(labels))\n"
+    }
+  },
+  "explore_003": {
+    "files": {
+      "settings.py": "def resolve_port(cli, env, config):\n    for source in (cli, env, config):\n        if \"port\" in source:\n            return source[\"port\"]\n    return 8080\n\n\ndef resolve_workers(cli, env, config):\n    for source in (cli, env, config):\n        if \"workers\" in source:\n            return source[\"workers\"]\n    return 4\n\n\ndef resolve_timeout(cli, env, config):\n    for source in (cli, env, config):\n        if \"timeout\" in source:\n            return source[\"timeout\"]\n    return 30\n"
+    },
+    "wrong_files": {
+      "settings.py": "def resolve_port(cli, env, config):\n    for source in (cli, env, config):\n        if \"port\" in source:\n            return source[\"port\"]\n    return 8080\n\n\ndef resolve_workers(cli, env, config):\n    for source in (cli, env, config):\n        if \"workers\" in source:\n            return source[\"workers\"]\n    return 4\n\n\ndef resolve_timeout(cli, env, config):\n    return cli.get(\"timeout\") or env.get(\"timeout\") or config.get(\"timeout\") or 30\n"
+    }
+  },
+  "experiment_003": {
+    "files": {
+      "query.py": "from urllib.parse import quote_plus\n\ndef encode_query(value):\n    return quote_plus(value, safe=\"\")\n"
+    },
+    "wrong_files": {
+      "query.py": "from urllib.parse import quote\n\ndef encode_query(value):\n    return quote(value, safe=\"\")\n"
+    }
+  },
+  "ask_003": {
+    "files": {
+      "exports.py": "from datetime import timedelta, timezone\n\ndef export_rows(events):\n    display_zone = timezone(timedelta(hours=-5))\n    return [{\"id\": event[\"id\"], \"starts_at\": event[\"starts_at\"].astimezone(display_zone).strftime(\"%Y-%m-%d %H:%M\")} for event in events]\n"
+    },
+    "wrong_files": {
+      "exports.py": "def export_rows(events):\n    return [{\"id\": event[\"id\"], \"starts_at\": event[\"starts_at\"].strftime(\"%Y-%m-%d %H:%M\")} for event in events]\n"
+    }
+  }
+}

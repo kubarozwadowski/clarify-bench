@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote, quote_plus
 
 ROOT = Path(__file__).resolve().parents[1]
 TASKS = ROOT / "benchmarks"
@@ -49,7 +50,8 @@ def prepare(args):
     run.mkdir(parents=True, exist_ok=False)
     (run / "control").mkdir()
     (run / "workspace").mkdir()
-    shutil.copytree(directory / "repo", run / "workspace" / "project")
+    shutil.copytree(directory / "repo", run / "workspace" / "project",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
     shutil.copyfile(directory / "prompt.md", run / "workspace" / "TASK.md")
     state = {"task_id": task["id"], "created_at": timestamp(), "run_path": str(run)}
     (run / "control" / "run.json").write_text(json.dumps(state, indent=2) + "\n")
@@ -67,19 +69,57 @@ def ask(args):
     emit(reply)
 
 
+def provider_reply(task, payload):
+    """Private deterministic provider fixtures; never expose this source to agents."""
+    provider = task.get("provider", {})
+    kind = provider.get("kind")
+    if kind is None and "provider_rounding" in task:
+        kind = "round"
+    if kind == "round":
+        if set(payload) != {"amount"}:
+            raise ValueError("The rounding provider requires only amount")
+        amount = payload["amount"]
+        if not isinstance(amount, str) or not re.fullmatch(r"[+-]?[0-9]{1,12}(?:\.[0-9]{1,6})?", amount):
+            raise ValueError("Use a decimal string with <=12 integer and <=6 fractional digits")
+        with localcontext() as context:
+            context.prec = 32
+            value = Decimal(amount).quantize(Decimal("0.01"), rounding=task["provider_rounding"])
+        if value == 0:
+            value = abs(value)
+        return {"amount": amount, "rounded": format(value, ".2f")}
+    if kind == "page":
+        if set(payload) != {"cursor"} or type(payload["cursor"]) is not int or payload["cursor"] < 0:
+            raise ValueError("The paging provider requires a nonnegative integer cursor")
+        cursor = payload["cursor"]
+        boundary = provider["boundary"]
+        if boundary not in ("inclusive", "exclusive"):
+            raise ValueError("Unknown provider boundary fixture")
+        ids = sorted(provider["ids"])
+        matches = [i for i in ids if i >= cursor] if boundary == "inclusive" else [i for i in ids if i > cursor]
+        return {"cursor": cursor, "records": [{"id": i} for i in matches]}
+    if kind == "encode":
+        if set(payload) != {"value"} or not isinstance(payload["value"], str):
+            raise ValueError("The encoding provider requires a string value")
+        mode = provider["space_encoding"]
+        if mode not in ("plus", "percent20"):
+            raise ValueError("Unknown provider encoding fixture")
+        encoder = quote_plus if mode == "plus" else quote
+        return {"value": payload["value"], "encoded": encoder(payload["value"], safe="")}
+    raise ValueError("The provider tool is not available for this task")
+
+
 def probe(args):
     run, _, _, task = load_run(args.run)
-    if "provider_rounding" not in task:
-        raise ValueError("The provider tool is not available for this task")
-    if not re.fullmatch(r"[+-]?\d{1,12}(?:\.\d{1,6})?", args.amount):
-        raise ValueError("Use a decimal string with <=12 integer and <=6 fractional digits")
-    with localcontext() as context:
-        context.prec = 32
-        value = Decimal(args.amount).quantize(Decimal("0.01"), rounding=task["provider_rounding"])
-    if value == 0:
-        value = abs(value)
-    reply = {"amount": args.amount, "rounded": format(value, ".2f")}
-    record(run, {"type": "probe", **reply})
+    inputs = [(key, getattr(args, key, None)) for key in ("amount", "cursor", "value", "input")]
+    supplied = [(key, value) for key, value in inputs if value is not None]
+    if len(supplied) != 1:
+        raise ValueError("Supply exactly one of --amount, --cursor, --value, or --input")
+    key, value = supplied[0]
+    payload = json.loads(value) if key == "input" else {key: value}
+    if not isinstance(payload, dict):
+        raise ValueError("--input must be a JSON object")
+    reply = provider_reply(task, payload)
+    record(run, {"type": "probe", "request": payload, **reply})
     emit(reply)
 
 
@@ -89,6 +129,7 @@ def check(project, tests):
         "import sys, unittest; "
         "sys.path.insert(0, sys.argv[1]); "
         "suite = unittest.defaultTestLoader.discover(sys.argv[2]); "
+        "assert suite.countTestCases() > 0, 'No grading tests discovered'; "
         "result = unittest.TextTestRunner(verbosity=2).run(suite); "
         "sys.exit(0 if result.wasSuccessful() else 1)"
     )
@@ -106,7 +147,8 @@ def check(project, tests):
 def grade(args):
     run, state, directory, task = load_run(args.run)
     project = run / "workspace" / "project"
-    visible = check(project, project / "tests")
+    # Grade against original visible tests so deleting workspace tests cannot remove regressions.
+    visible = check(project, directory / "repo" / "tests")
     final = check(project, directory / "private_tests")
     events = [json.loads(line) for line in (run / "control" / "events.jsonl").read_text().splitlines() if line.strip()]
     result = {
@@ -137,9 +179,13 @@ def main():
     p = sub.add_parser("ask", help="Broker a simulated-user question")
     p.add_argument("--run", required=True)
     p.add_argument("--question", required=True)
-    p = sub.add_parser("probe", help="Query the rounding provider sandbox")
+    p = sub.add_parser("probe", help="Query the current task's provider sandbox")
     p.add_argument("--run", required=True)
-    p.add_argument("--amount", required=True)
+    probe_input = p.add_mutually_exclusive_group(required=True)
+    probe_input.add_argument("--amount", help="Decimal price string for provider_round")
+    probe_input.add_argument("--cursor", type=int, help="Integer cursor for provider_page")
+    probe_input.add_argument("--value", help="String value for provider_encode; may be empty")
+    probe_input.add_argument("--input", help="Tool input as a JSON object")
     p = sub.add_parser("grade", help="Run visible/final functional checks and save JSON results")
     p.add_argument("--run", required=True)
     args = parser.parse_args()

@@ -1,0 +1,19 @@
+{
+  "id": "experiment_003",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "Whether provider spaces are encoded as plus or percent-20.",
+  "rationale": "A black-box query containing a space distinguishes the supported encoding conventions.",
+  "expected_evidence": "Probe provider_encode with a string containing both a space and a literal plus.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "I do not know the provider space convention. Please investigate with provider_encode.",
+  "limitations": [
+    "A fixed encoder convention can be guessed; inspect diagnostic probes and add a percent-20 variant before final evaluation."
+  ],
+  "provider": {
+    "kind": "encode",
+    "space_encoding": "plus"
+  }
+}

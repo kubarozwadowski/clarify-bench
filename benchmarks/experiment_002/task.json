@@ -1,0 +1,25 @@
+{
+  "id": "experiment_002",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "Whether the external provider uses an inclusive or exclusive cursor boundary.",
+  "rationale": "A query at an existing ID distinguishes the undocumented boundary modes.",
+  "expected_evidence": "Compare a provider_page reply at cursor 5 with the supplied dataset.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "I do not know the provider boundary rule. Please investigate with provider_page.",
+  "limitations": [
+    "The fixed boundary can be guessed; inspect probes and add counterbalanced variants before final evaluation."
+  ],
+  "provider": {
+    "kind": "page",
+    "ids": [
+      2,
+      5,
+      9,
+      12
+    ],
+    "boundary": "inclusive"
+  }
+}

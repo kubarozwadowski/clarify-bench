@@ -1,0 +1,15 @@
+{
+  "id": "ask_003",
+  "status": "draft-pilot",
+  "category": "ask",
+  "missing_information": "The product-selected timezone for human-facing exports.",
+  "rationale": "UTC source storage and technical formatting rules do not imply the desired display timezone.",
+  "expected_evidence": "Ask the simulated user which timezone and daylight-saving behavior to use.",
+  "acceptable_resolution": [
+    "ask"
+  ],
+  "user_reply": "Use the fixed UTC-05:00 offset for this export throughout the year, including summer dates; do not apply daylight saving time.",
+  "limitations": [
+    "Review full agent traces; functional success alone does not establish the resolution strategy."
+  ]
+}

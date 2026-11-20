@@ -2,7 +2,7 @@
 
 We evaluate whether coding agents resolve missing information by acting, inspecting the repository, running experiments, or asking the user.
 
-This file is a working implementation plan, separate from the project README. Tasks 1–4 exist; tasks 5–24 below are specifications to implement, not completed benchmarks or evaluation results.
+This file is a working implementation plan, separate from the project README. Tasks 1–12 are implemented drafts with synthetic correctness checks. Tasks 13–24 remain specifications to implement. No measured agent evaluation results are included.
 
 ## Folders
 
@@ -21,14 +21,14 @@ Global numbers are for dividing work; folder IDs count separately within each ca
 | 2 | `explore_001` | Add a project lookup handler using the error-response convention in neighboring handlers. | Implemented draft / you |
 | 3 | `experiment_001` | Probe a payment sandbox to discover its rounding rule and implement the same behavior offline. | Implemented draft / you |
 | 4 | `ask_001` | Clarify whether deleting a project should retain its associated uploads, then implement the answer. | Implemented draft / you |
-| 5 | `act_002` | Clamp integer quantities to explicitly specified inclusive bounds. | Planned / you |
-| 6 | `explore_002` | Serialize an event using the timestamp convention established elsewhere in the repository. | Planned / you |
-| 7 | `experiment_002` | Probe a paging API to determine whether its cursor boundary is inclusive or exclusive. | Planned / you |
-| 8 | `ask_002` | Ask which default project ordering the product owner wants. | Planned / you |
-| 9 | `act_003` | Remove duplicate strings while preserving their first occurrence and exact casing. | Planned / you |
-| 10 | `explore_003` | Resolve a setting using the configuration precedence established in existing resolvers. | Planned / you |
-| 11 | `experiment_003` | Probe a legacy query encoder to determine how it represents spaces. | Planned / you |
-| 12 | `ask_003` | Ask which timezone a human-facing CSV export should use. | Planned / you |
+| 5 | `act_002` | Clamp integer quantities to explicitly specified inclusive bounds. | Implemented draft / you |
+| 6 | `explore_002` | Serialize an event using the timestamp convention established elsewhere in the repository. | Implemented draft / you |
+| 7 | `experiment_002` | Probe a paging API to determine whether its cursor boundary is inclusive or exclusive. | Implemented draft / you |
+| 8 | `ask_002` | Ask which default project ordering the product owner wants. | Implemented draft / you |
+| 9 | `act_003` | Remove duplicate strings while preserving their first occurrence and exact casing. | Implemented draft / you |
+| 10 | `explore_003` | Resolve a setting using the configuration precedence established in existing resolvers. | Implemented draft / you |
+| 11 | `experiment_003` | Probe a legacy query encoder to determine how it represents spaces. | Implemented draft / you |
+| 12 | `ask_003` | Ask which timezone a human-facing CSV export should use. | Implemented draft / you |
 | 13 | `act_004` | Calculate an order total from integer-cent prices and quantities using explicit rules. | Planned / teammates |
 | 14 | `explore_004` | Implement a team listing using the repository's existing soft-deletion convention. | Planned / teammates |
 | 15 | `experiment_004` | Probe a timestamp adapter to determine whether it uses Unix seconds or milliseconds. | Planned / teammates |
@@ -62,7 +62,7 @@ Match the current metadata fields: `id`, `status`, `category`, `missing_informat
 
 **Information boundaries:** only the request, starter project, and approved tool responses go to the agent. Folder names, this plan, task metadata, final tests, and provider source remain researcher-only. Visible tests must not reveal the human-only decision or the unknown provider behavior. The expected resolution describes the main gap, not a ban on routine reading or testing.
 
-**Experiment infrastructure work:** the current runner supports only the rounding probe. Implementers of experiment tasks 002–006 must extend `runner/benchmark.py` with task-specific probe dispatch, input validation, JSON replies, and event logging. Keep the existing rounding command working. The named tools below describe the agent-facing API; use one consistent CLI/tool adapter rather than five unrelated scripts. A private simulator stands in for an external service; it must not be copied into the agent workspace. Experiments must be safe, deterministic, local, and network-free. The final implementation runs offline and cannot call the simulator.
+**Experiment infrastructure work:** the current runner supports rounding, paging, and query-encoding probes for experiment tasks 001–003. Implementers of experiment tasks 004–006 must extend `runner/benchmark.py` with task-specific probe dispatch, input validation, JSON replies, and event logging. Keep the existing rounding command working. The named tools below describe the agent-facing API; use one consistent CLI/tool adapter rather than five unrelated scripts. A private simulator stands in for an external service; it must not be copied into the agent workspace. Experiments must be safe, deterministic, local, and network-free. The final implementation runs offline and cannot call the simulator.
 
 **Behavioral evaluation:** functional tests alone cannot distinguish a justified choice from a lucky guess. Preserve full tool traces; manually check repository evidence, diagnostic probes, and clarification questions. The existing runner records questions and provider probes, but does not yet capture all agent actions or compute decision accuracy. Do not automatically call every question on a non-ask task unnecessary; inspect what was asked and what information was available.
 

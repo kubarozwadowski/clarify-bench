@@ -1,0 +1,15 @@
+{
+  "id": "ask_002",
+  "status": "draft-pilot",
+  "category": "ask",
+  "missing_information": "The product owner's desired default project order and tie-breaking rule.",
+  "rationale": "Data types and code do not establish which display order the product should use.",
+  "expected_evidence": "Ask the simulated user which order and tie rule are desired.",
+  "acceptable_resolution": [
+    "ask"
+  ],
+  "user_reply": "Show newest projects first, sorting by created_at descending; break ties by id ascending.",
+  "limitations": [
+    "Review full agent traces; functional success alone does not establish the resolution strategy."
+  ]
+}
