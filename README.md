@@ -11,7 +11,7 @@ We evaluate whether coding agents resolve missing information by acting, inspect
 
 ## Tasks
 
-Tasks 1–12 are implemented drafts. Tasks 13–24 are planned.
+All 24 tasks are implemented drafts: six per category.
 
 | # | Task | Description |
 |---|---|---|

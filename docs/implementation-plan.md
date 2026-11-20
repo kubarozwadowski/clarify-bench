@@ -2,7 +2,7 @@
 
 We evaluate whether coding agents resolve missing information by acting, inspecting the repository, running experiments, or asking the user.
 
-This file is a working implementation plan, separate from the project README. Tasks 1–12 are implemented drafts with synthetic correctness checks. Tasks 13–24 remain specifications to implement. No measured agent evaluation results are included.
+This file is a working implementation plan, separate from the project README. All 24 tasks are implemented drafts with synthetic correctness checks. No measured agent evaluation results are included.
 
 ## Folders
 
@@ -13,7 +13,7 @@ This file is a working implementation plan, separate from the project README. Ta
 
 ## Task inventory and ownership
 
-Global numbers are for dividing work; folder IDs count separately within each category. The first 12 tasks give you three of each category. Tasks 13–24 are available for your teammates.
+Global numbers identify the original work split; folder IDs count separately within each category. All 24 tasks are now implemented; the owner column preserves the original assignments.
 
 | # | Folder | One-line task explanation | Status / owner |
 |---|---|---|---|
@@ -29,22 +29,22 @@ Global numbers are for dividing work; folder IDs count separately within each ca
 | 10 | `explore_003` | Resolve a setting using the configuration precedence established in existing resolvers. | Implemented draft / you |
 | 11 | `experiment_003` | Probe a legacy query encoder to determine how it represents spaces. | Implemented draft / you |
 | 12 | `ask_003` | Ask which timezone a human-facing CSV export should use. | Implemented draft / you |
-| 13 | `act_004` | Calculate an order total from integer-cent prices and quantities using explicit rules. | Planned / teammates |
-| 14 | `explore_004` | Implement a team listing using the repository's existing soft-deletion convention. | Planned / teammates |
-| 15 | `experiment_004` | Probe a timestamp adapter to determine whether it uses Unix seconds or milliseconds. | Planned / teammates |
-| 16 | `ask_004` | Clarify whether an import should overwrite or preserve an existing contact. | Planned / teammates |
-| 17 | `act_005` | Implement a retry predicate from an explicitly supplied status-code and attempt policy. | Planned / teammates |
-| 18 | `explore_005` | Implement document lookup using the tenant-scoping behavior of existing lookup functions. | Planned / teammates |
-| 19 | `experiment_005` | Probe a message API to discover whether its size limit counts characters or UTF-8 bytes. | Planned / teammates |
-| 20 | `ask_005` | Ask what should happen when a reminder date falls on a weekend. | Planned / teammates |
-| 21 | `act_006` | Redact explicitly named sensitive fields without modifying the original dictionary. | Planned / teammates |
-| 22 | `explore_006` | Build a project cache key using the namespace convention demonstrated by existing key builders. | Planned / teammates |
-| 23 | `experiment_006` | Probe a sorting service to determine its case-handling behavior. | Planned / teammates |
-| 24 | `ask_006` | Clarify whether new accounts should start with product notifications enabled. | Planned / teammates |
+| 13 | `act_004` | Calculate an order total from integer-cent prices and quantities using explicit rules. | Implemented draft / teammates |
+| 14 | `explore_004` | Implement a team listing using the repository's existing soft-deletion convention. | Implemented draft / teammates |
+| 15 | `experiment_004` | Probe a timestamp adapter to determine whether it uses Unix seconds or milliseconds. | Implemented draft / teammates |
+| 16 | `ask_004` | Clarify whether an import should overwrite or preserve an existing contact. | Implemented draft / teammates |
+| 17 | `act_005` | Implement a retry predicate from an explicitly supplied status-code and attempt policy. | Implemented draft / teammates |
+| 18 | `explore_005` | Implement document lookup using the tenant-scoping behavior of existing lookup functions. | Implemented draft / teammates |
+| 19 | `experiment_005` | Probe a message API to discover whether its size limit counts characters or UTF-8 bytes. | Implemented draft / teammates |
+| 20 | `ask_005` | Ask what should happen when a reminder date falls on a weekend. | Implemented draft / teammates |
+| 21 | `act_006` | Redact explicitly named sensitive fields without modifying the original dictionary. | Implemented draft / teammates |
+| 22 | `explore_006` | Build a project cache key using the namespace convention demonstrated by existing key builders. | Implemented draft / teammates |
+| 23 | `experiment_006` | Probe a sorting service to determine its case-handling behavior. | Implemented draft / teammates |
+| 24 | `ask_006` | Clarify whether new accounts should start with product notifications enabled. | Implemented draft / teammates |
 
 ## Implementation contract for every new task
 
-Use the existing four tasks as structural examples:
+Use the existing task layout for future additions:
 
 ```text
 benchmarks/<category>_<number>/
@@ -56,17 +56,17 @@ benchmarks/<category>_<number>/
   private_tests/test_solution.py    # Final checks; never copied into agent workspace
 ```
 
-Keep Python 3.10+ and the standard library unless the group agrees otherwise. Each task should have one main requirement gap. Preserve unrelated behavior. Make the starter fail at least one private test and verify a correct solution passes. For planned tasks, create fixtures and tests from the specifications below; do not simply give the agent a completed implementation.
+Keep Python 3.10+ and the standard library unless the group agrees otherwise. Each task should have one main requirement gap. Preserve unrelated behavior. Make the starter fail at least one private test and verify a correct solution passes. For future tasks, create fixtures and tests from their specifications; do not simply give the agent a completed implementation.
 
 Match the current metadata fields: `id`, `status`, `category`, `missing_information`, `rationale`, `expected_evidence`, `acceptable_resolution`, `user_reply`, and `limitations`. Start with `status: "draft-pilot"`. For act tasks, `missing_information` is null. For explore tasks, user replies should direct the agent to existing project conventions without disclosing the answer. For experiment tasks, user replies should say the provider behavior is unknown and the sandbox is available. For ask tasks, use the exact private product decision specified below.
 
 **Information boundaries:** only the request, starter project, and approved tool responses go to the agent. Folder names, this plan, task metadata, final tests, and provider source remain researcher-only. Visible tests must not reveal the human-only decision or the unknown provider behavior. The expected resolution describes the main gap, not a ban on routine reading or testing.
 
-**Experiment infrastructure work:** the current runner supports rounding, paging, and query-encoding probes for experiment tasks 001–003. Implementers of experiment tasks 004–006 must extend `runner/benchmark.py` with task-specific probe dispatch, input validation, JSON replies, and event logging. Keep the existing rounding command working. The named tools below describe the agent-facing API; use one consistent CLI/tool adapter rather than five unrelated scripts. A private simulator stands in for an external service; it must not be copied into the agent workspace. Experiments must be safe, deterministic, local, and network-free. The final implementation runs offline and cannot call the simulator.
+**Experiment infrastructure work:** the runner supports all six experiment types: rounding, paging, query encoding, timestamps, message limits, and sorting. Each uses task-specific private fixture dispatch, input validation, JSON replies, and event logging through the same probe command. Existing convenience flags remain supported; the JSON input form works for every provider. Keep this interface consistent when adding future tasks. A private simulator stands in for an external service; it must not be copied into the agent workspace. Experiments must be safe, deterministic, local, and network-free. The final implementation runs offline and cannot call the simulator.
 
 **Behavioral evaluation:** functional tests alone cannot distinguish a justified choice from a lucky guess. Preserve full tool traces; manually check repository evidence, diagnostic probes, and clarification questions. The existing runner records questions and provider probes, but does not yet capture all agent actions or compute decision accuracy. Do not automatically call every question on a non-ask task unnecessary; inspect what was asked and what information was available.
 
-## Specifications for tasks 5–12 — your implementation queue
+## Specifications for tasks 5–12
 
 ### 5. `act_002` — Clamp a quantity
 
@@ -124,7 +124,7 @@ Match the current metadata fields: `id`, `status`, `category`, `missing_informat
 - **Private checks:** winter and summer inputs, date/year rollover, exact minute formatting, empty input, and no mutation. Use `datetime.timezone(timedelta(hours=-5))`; no external timezone database required. Visible tests must not reveal the offset.
 - **Expected resolution:** ask about the export timezone. The fixed offset is intentional and must not be silently replaced with America/New_York.
 
-## Specifications for tasks 13–24 — teammate implementation queue
+## Specifications for tasks 13–24
 
 ### 13. `act_004` — Order totals in cents
 
@@ -223,4 +223,4 @@ The unmodified task should fail final grading; the same command should pass afte
 
 New implementers must add runner checks for each new task, especially provider inputs/outputs, tool availability, no private-file copying, failing unfinished code, and passing completed code. Do not call a test implemented merely because its folder or prompt exists. The inventory above must be updated when implementation is complete.
 
-Before final evaluation, have another teammate review labels and evidence boundaries. Reserve held-out tasks or independent variants that were not used to tune the policy. These 24 planned cases are a build target, not automatically a held-out test set. No outcome or baseline failure should be asserted before real runs.
+Before final evaluation, have another teammate review labels and evidence boundaries. Reserve held-out tasks or independent variants that were not used to tune the policy. These 24 implemented cases are not automatically a held-out test set. No outcome or baseline failure should be asserted before real runs.

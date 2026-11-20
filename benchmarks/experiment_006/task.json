@@ -1,0 +1,19 @@
+{
+  "id": "experiment_006",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "Whether the provider compares original strings or casefolded strings.",
+  "rationale": "Diagnostic mixed-case probes distinguish the two stated sorting families.",
+  "expected_evidence": "Probe provider_sort with mixed case and casefold ties before implementing.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "I do not know the provider comparison mode. Please investigate using provider_sort.",
+  "limitations": [
+    "The fixed mode can be guessed; require diagnostic probes and later add code-point-mode variants."
+  ],
+  "provider": {
+    "kind": "sort",
+    "mode": "casefold"
+  }
+}

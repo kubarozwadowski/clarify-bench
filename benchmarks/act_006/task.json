@@ -1,0 +1,15 @@
+{
+  "id": "act_006",
+  "status": "draft-pilot",
+  "category": "act",
+  "missing_information": null,
+  "rationale": "Sensitive keys, replacement text, key casing, and shallow copying are explicit.",
+  "expected_evidence": "The request specifies the complete redaction contract.",
+  "acceptable_resolution": [
+    "act"
+  ],
+  "user_reply": "The request supplies the exact keys and shallow-copy behavior. No additional redaction policy is needed.",
+  "limitations": [
+    "Review full agent traces; functional success alone does not establish the resolution strategy."
+  ]
+}

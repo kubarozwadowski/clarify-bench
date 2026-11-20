@@ -1,0 +1,15 @@
+{
+  "id": "explore_005",
+  "status": "draft-pilot",
+  "category": "explore",
+  "missing_information": "The exact matching and missing-result convention used by resource lookups.",
+  "rationale": "Existing invoice and note functions provide repository evidence for the new lookup.",
+  "expected_evidence": "Read find_invoice and find_note in lookups.py.",
+  "acceptable_resolution": [
+    "explore"
+  ],
+  "user_reply": "Please follow the matching and missing-result behavior of the existing resource lookup functions.",
+  "limitations": [
+    "Tenant scoping is partly inferable from the signature; inspect repository evidence in traces before claiming exploration was necessary."
+  ]
+}

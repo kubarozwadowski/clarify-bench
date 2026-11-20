@@ -1,0 +1,15 @@
+{
+  "id": "ask_006",
+  "status": "draft-pilot",
+  "category": "ask",
+  "missing_information": "Whether product notifications should be enabled for new accounts.",
+  "rationale": "The initial product preference is unspecified and cannot be inferred from account data.",
+  "expected_evidence": "Ask the product owner for the default notification setting.",
+  "acceptable_resolution": [
+    "ask"
+  ],
+  "user_reply": "Product notifications should be disabled for new accounts. Users can opt in later.",
+  "limitations": [
+    "A default of False can be guessed from general convention; functional success alone cannot establish appropriate clarification."
+  ]
+}

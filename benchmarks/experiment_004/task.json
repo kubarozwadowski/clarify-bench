@@ -1,0 +1,19 @@
+{
+  "id": "experiment_004",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "Whether the provider timestamp unit is seconds or milliseconds.",
+  "rationale": "A non-epoch executable probe distinguishes units; source storage alone does not.",
+  "expected_evidence": "Probe provider_timestamp at a nonzero offset from the epoch.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "I do not know the provider timestamp unit. Please use provider_timestamp to investigate.",
+  "limitations": [
+    "A fixed unit can be guessed; require diagnostic probe evidence and later add seconds-mode variants."
+  ],
+  "provider": {
+    "kind": "timestamp",
+    "unit": "milliseconds"
+  }
+}

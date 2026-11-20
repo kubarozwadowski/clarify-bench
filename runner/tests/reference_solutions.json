@@ -94,5 +94,106 @@
     "wrong_files": {
       "exports.py": "def export_rows(events):\n    return [{\"id\": event[\"id\"], \"starts_at\": event[\"starts_at\"].strftime(\"%Y-%m-%d %H:%M\")} for event in events]\n"
     }
+  },
+  "act_004": {
+    "files": {
+      "orders.py": "def order_total(lines):\n    total = 0\n    for line in lines:\n        price, quantity = line[\"unit_price_cents\"], line[\"quantity\"]\n        if price < 0 or quantity < 0:\n            raise ValueError(\"negative price or quantity\")\n        total += price * quantity\n    return total\n"
+    },
+    "wrong_files": {
+      "orders.py": "def order_total(lines):\n    return sum(line[\"unit_price_cents\"] * line[\"quantity\"] for line in lines)\n"
+    }
+  },
+  "explore_004": {
+    "files": {
+      "listings.py": "def list_users(users):\n    return [user for user in users if user.get(\"deleted_at\") is None]\n\n\ndef list_projects(projects):\n    return [project for project in projects if project.get(\"deleted_at\") is None]\n\n\ndef list_teams(teams):\n    return [team for team in teams if team.get(\"deleted_at\") is None]\n"
+    },
+    "wrong_files": {
+      "listings.py": "def list_users(users):\n    return [user for user in users if user.get(\"deleted_at\") is None]\n\n\ndef list_projects(projects):\n    return [project for project in projects if project.get(\"deleted_at\") is None]\n\n\ndef list_teams(teams):\n    return [team for team in teams if not team.get(\"deleted_at\")]\n"
+    }
+  },
+  "experiment_004": {
+    "files": {
+      "timestamps.py": "from datetime import datetime, timezone\n\ndef encode_timestamp(iso_utc):\n    instant = datetime.strptime(iso_utc,\"%Y-%m-%dT%H:%M:%SZ\").replace(tzinfo=timezone.utc)\n    return int((instant-datetime(1970,1,1,tzinfo=timezone.utc)).total_seconds())*1000\n"
+    },
+    "wrong_files": {
+      "timestamps.py": "from datetime import datetime, timezone\n\ndef encode_timestamp(iso_utc):\n    instant = datetime.strptime(iso_utc,\"%Y-%m-%dT%H:%M:%SZ\").replace(tzinfo=timezone.utc)\n    return int(instant.timestamp())\n"
+    },
+    "wrong_variants": [
+      {
+        "timestamps.py": "from datetime import datetime\n\ndef encode_timestamp(iso_utc):\n    return int(datetime.strptime(iso_utc,\"%Y-%m-%dT%H:%M:%SZ\").timestamp())*1000\n"
+      }
+    ]
+  },
+  "ask_004": {
+    "files": {
+      "contacts.py": "def import_contact(contacts, incoming):\n    if incoming[\"email\"] in contacts:\n        return False\n    contacts[incoming[\"email\"]] = incoming.copy()\n    return True\n"
+    },
+    "wrong_files": {
+      "contacts.py": "def import_contact(contacts, incoming):\n    changed = contacts.get(incoming[\"email\"]) != incoming\n    contacts[incoming[\"email\"]] = incoming.copy()\n    return changed\n"
+    }
+  },
+  "act_005": {
+    "files": {
+      "retry.py": "def should_retry(status_code, retries_used):\n    return (status_code == 429 or 500 <= status_code <= 599) and retries_used < 3\n"
+    },
+    "wrong_files": {
+      "retry.py": "def should_retry(status_code, retries_used):\n    return (status_code == 429 or 500 <= status_code <= 599) and retries_used <= 3\n"
+    }
+  },
+  "explore_005": {
+    "files": {
+      "lookups.py": "def find_invoice(invoices, tenant_id, invoice_id):\n    for invoice in invoices:\n        if invoice[\"tenant_id\"] == tenant_id and invoice[\"id\"] == invoice_id:\n            return invoice\n    return None\n\n\ndef find_note(notes, tenant_id, note_id):\n    for note in notes:\n        if note[\"tenant_id\"] == tenant_id and note[\"id\"] == note_id:\n            return note\n    return None\n\n\ndef find_document(documents, tenant_id, document_id):\n    for document in documents:\n        if document[\"tenant_id\"] == tenant_id and document[\"id\"] == document_id:\n            return document\n    return None\n"
+    },
+    "wrong_files": {
+      "lookups.py": "def find_invoice(invoices, tenant_id, invoice_id):\n    for invoice in invoices:\n        if invoice[\"tenant_id\"] == tenant_id and invoice[\"id\"] == invoice_id:\n            return invoice\n    return None\n\n\ndef find_note(notes, tenant_id, note_id):\n    for note in notes:\n        if note[\"tenant_id\"] == tenant_id and note[\"id\"] == note_id:\n            return note\n    return None\n\n\ndef find_document(documents, tenant_id, document_id):\n    return next((document for document in documents if document[\"id\"] == document_id),None)\n"
+    }
+  },
+  "experiment_005": {
+    "files": {
+      "messages.py": "def chunk_message(text):\n    chunks = []\n    chunk = \"\"\n    size = 0\n    for char in text:\n        char_size = len(char.encode(\"utf-8\"))\n        if size + char_size > 8:\n            chunks.append(chunk)\n            chunk, size = \"\", 0\n        chunk += char\n        size += char_size\n    if chunk:\n        chunks.append(chunk)\n    return chunks\n"
+    },
+    "wrong_files": {
+      "messages.py": "def chunk_message(text):\n    return [text[index:index+8] for index in range(0,len(text),8)]\n"
+    }
+  },
+  "ask_005": {
+    "files": {
+      "reminders.py": "from datetime import timedelta\n\ndef reminder_date(due_date):\n    weekday = due_date.weekday()\n    return due_date + timedelta(days=7-weekday) if weekday >= 5 else due_date\n"
+    },
+    "wrong_files": {
+      "reminders.py": "def reminder_date(due_date):\n    return due_date\n"
+    }
+  },
+  "act_006": {
+    "files": {
+      "redaction.py": "def redact_record(record):\n    result = record.copy()\n    for key in (\"password\",\"api_key\",\"access_token\"):\n        if key in result:\n            result[key] = \"[REDACTED]\"\n    return result\n"
+    },
+    "wrong_files": {
+      "redaction.py": "def redact_record(record):\n    result = record.copy()\n    for key in (\"password\",\"api_key\",\"access_token\"):\n        if result.get(key):\n            result[key] = \"[REDACTED]\"\n    return result\n"
+    }
+  },
+  "explore_006": {
+    "files": {
+      "cache_keys.py": "from urllib.parse import quote\n\n\ndef user_cache_key(tenant_id, user_id):\n    return \"v1:\" + quote(tenant_id,safe=\"\") + \":user:\" + quote(user_id,safe=\"\")\n\n\ndef team_cache_key(tenant_id, team_id):\n    return \"v1:\" + quote(tenant_id,safe=\"\") + \":team:\" + quote(team_id,safe=\"\")\n\n\ndef project_cache_key(tenant_id, project_id):\n    return \"v1:\" + quote(tenant_id,safe=\"\") + \":project:\" + quote(project_id,safe=\"\")\n"
+    },
+    "wrong_files": {
+      "cache_keys.py": "from urllib.parse import quote\n\n\ndef user_cache_key(tenant_id, user_id):\n    return \"v1:\" + quote(tenant_id,safe=\"\") + \":user:\" + quote(user_id,safe=\"\")\n\n\ndef team_cache_key(tenant_id, team_id):\n    return \"v1:\" + quote(tenant_id,safe=\"\") + \":team:\" + quote(team_id,safe=\"\")\n\n\ndef project_cache_key(tenant_id, project_id):\n    return \"v1:\" + quote(tenant_id) + \":project:\" + quote(project_id)\n"
+    }
+  },
+  "experiment_006": {
+    "files": {
+      "sorting.py": "def sort_names(names):\n    return sorted(names,key=str.casefold)\n"
+    },
+    "wrong_files": {
+      "sorting.py": "def sort_names(names):\n    return sorted(names)\n"
+    }
+  },
+  "ask_006": {
+    "files": {
+      "accounts.py": "def create_account(user_id, email):\n    return {\"id\":user_id,\"email\":email,\"product_notifications\":False}\n"
+    },
+    "wrong_files": {
+      "accounts.py": "def create_account(user_id, email):\n    return {\"id\":user_id,\"email\":email,\"product_notifications\":True}\n"
+    }
   }
 }

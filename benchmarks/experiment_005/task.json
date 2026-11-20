@@ -1,0 +1,20 @@
+{
+  "id": "experiment_005",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "Whether the provider size limit counts code points or UTF-8 bytes.",
+  "rationale": "ASCII cases cannot distinguish the modes; executable Unicode probes can.",
+  "expected_evidence": "Probe a multibyte string near the limit, then implement greedy splitting.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "I do not know the provider size unit. Please investigate using provider_accepts.",
+  "limitations": [
+    "A fixed byte limit can be guessed; inspect Unicode probes and add code-point-mode variants before final evaluation."
+  ],
+  "provider": {
+    "kind": "accepts",
+    "unit": "utf8_bytes",
+    "limit": 8
+  }
+}

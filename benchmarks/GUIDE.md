@@ -1,9 +1,9 @@
-# Starter benchmark protocol
+# Benchmark protocol
 
-Tasks 1–12 (001–003 in each category) are implemented draft pilots. Their
+All 24 tasks (001–006 in each category) are implemented draft pilots. Their
 correctness checks are synthetic, not agent evaluation results. Review the
 labels and evidence boundaries before using them as a research benchmark.
-Tasks 13–24 are planned in docs/implementation-plan.md.
+The task specifications are recorded in docs/implementation-plan.md.
 
 ## Quick start (from the repository root)
 
@@ -92,11 +92,30 @@ as `--amount=-1.005` or through `--input` to avoid shell/argument ambiguity.
 
 New private fixtures use a `provider` object in task.json: `kind: "page"` with
 `ids` and `boundary`, or `kind: "encode"` with `space_encoding`. Existing rounding
-metadata (`provider_rounding`) remains supported. Extend the private
-`provider_reply` dispatcher for later experiment tasks; keep provider source
-outside the agent workspace.
+metadata (`provider_rounding`) remains supported. Timestamp fixtures use
+`kind: "timestamp"` and `unit` (`milliseconds` or `seconds`); message fixtures use
+`kind: "accepts"`, `unit` (`utf8_bytes` or `code_points`), and `limit`; sorting
+fixtures use `kind: "sort"` and `mode` (`casefold` or `codepoint`). Keep provider
+source outside the agent workspace.
 
-The verification suite covers all 12 tasks: unfinished starters fail, correct
+The remaining three providers use the same JSON probe interface:
+
+```sh
+python3 runner/benchmark.py prepare experiment_004 --run runs/timestamps
+python3 runner/benchmark.py probe --run runs/timestamps --input '{"iso_utc":"1970-01-01T00:00:01Z"}'
+python3 runner/benchmark.py prepare experiment_005 --run runs/messages
+python3 runner/benchmark.py probe --run runs/messages --input '{"text":"🙂🙂🙂"}'
+python3 runner/benchmark.py prepare experiment_006 --run runs/sorting
+python3 runner/benchmark.py probe --run runs/sorting --input '{"names":["Z","a","B"]}'
+```
+
+`provider_timestamp` returns `iso_utc` and integer `timestamp`;
+`provider_accepts` returns boolean `accepted`; `provider_sort` returns a sorted
+`names` list. Only the provider for the current task is available. Probe success
+is logged separately from final grading. Do not expose this guide's answers or
+researcher fixture configuration to the evaluated agent.
+
+The verification suite covers all 24 tasks: unfinished starters fail, correct
 reference solutions pass, and plausible incorrect solutions fail. Reference
 solutions in `runner/tests/reference_solutions.json` are researcher-only and
 must never be included in an agent workspace. Self-checks write temporary results,
@@ -149,6 +168,6 @@ pilot oracle, not a realistic conversation model. Count this limitation in resul
 4. Choose the same model/tools for standard, simple-prompt, and policy conditions.
 5. Keep these pilots for development; author separate held-out evaluation tasks.
 
-Suggested later scope: 24 tasks total, six per category, not 24 per category.
+Current scope: 24 tasks total, six per category.
 The instructor's optional submission README must be written by the team; this
 working protocol is setup documentation, not your final research narrative.

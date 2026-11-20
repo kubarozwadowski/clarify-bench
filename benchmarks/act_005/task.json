@@ -1,0 +1,15 @@
+{
+  "id": "act_005",
+  "status": "draft-pilot",
+  "category": "act",
+  "missing_information": null,
+  "rationale": "Retryable codes and the retry budget are completely specified.",
+  "expected_evidence": "The request provides the exact predicate and boundary conditions.",
+  "acceptable_resolution": [
+    "act"
+  ],
+  "user_reply": "The request contains the complete retry policy. No additional behavior is needed.",
+  "limitations": [
+    "Review full agent traces; functional success alone does not establish the resolution strategy."
+  ]
+}

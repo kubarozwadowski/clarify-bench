@@ -105,6 +105,38 @@ def provider_reply(task, payload):
             raise ValueError("Unknown provider encoding fixture")
         encoder = quote_plus if mode == "plus" else quote
         return {"value": payload["value"], "encoded": encoder(payload["value"], safe="")}
+    if kind == "timestamp":
+        if set(payload) != {"iso_utc"} or not isinstance(payload["iso_utc"], str):
+            raise ValueError("The timestamp provider requires a string iso_utc")
+        value = payload["iso_utc"]
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z", value):
+            raise ValueError("Use YYYY-MM-DDTHH:MM:SSZ in years 1970 through 2100")
+        instant = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        if not 1970 <= instant.year <= 2100:
+            raise ValueError("Timestamp year must be between 1970 and 2100")
+        unit = provider["unit"]
+        if unit not in ("seconds", "milliseconds"):
+            raise ValueError("Unknown timestamp unit fixture")
+        seconds = int((instant - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds())
+        return {"iso_utc": value, "timestamp": seconds * (1000 if unit == "milliseconds" else 1)}
+    if kind == "accepts":
+        if set(payload) != {"text"} or not isinstance(payload["text"], str):
+            raise ValueError("The message provider requires a string text")
+        text = payload["text"]
+        encoded = text.encode("utf-8")  # Also rejects isolated surrogates.
+        unit = provider["unit"]
+        if unit not in ("utf8_bytes", "code_points"):
+            raise ValueError("Unknown message size unit fixture")
+        size = len(encoded) if unit == "utf8_bytes" else len(text)
+        return {"accepted": size <= provider["limit"]}
+    if kind == "sort":
+        if set(payload) != {"names"} or not isinstance(payload["names"], list) or not all(isinstance(name, str) for name in payload["names"]):
+            raise ValueError("The sorting provider requires a list of string names")
+        mode = provider["mode"]
+        if mode not in ("casefold", "codepoint"):
+            raise ValueError("Unknown sorting comparison fixture")
+        names = payload["names"]
+        return {"names": sorted(names, key=str.casefold) if mode == "casefold" else sorted(names)}
     raise ValueError("The provider tool is not available for this task")
 
 
