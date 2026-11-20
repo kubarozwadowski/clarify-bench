@@ -1,0 +1,15 @@
+{
+  "id": "explore_001",
+  "status": "draft-pilot",
+  "category": "explore",
+  "missing_information": "The exact missing-resource response convention.",
+  "rationale": "Two neighboring handlers provide a consistent convention and evidence for the new one.",
+  "expected_evidence": "Read get_user/get_team in handlers.py and existing tests.",
+  "acceptable_resolution": [
+    "explore"
+  ],
+  "user_reply": "Please follow the existing lookup handlers in this project. I have no additional response-format preference.",
+  "limitations": [
+    "A model may guess the format. Grade the trace as well as the implementation."
+  ]
+}

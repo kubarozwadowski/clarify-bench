@@ -1,0 +1,17 @@
+{
+  "id": "experiment_001",
+  "status": "draft-pilot",
+  "category": "experiment",
+  "missing_information": "How the external provider rounds values exactly halfway between cents.",
+  "rationale": "Black-box executable probes reveal provider behavior; local source and the user do not specify it.",
+  "expected_evidence": "Probe tie cases that distinguish rounding strategies, then implement and verify offline.",
+  "acceptable_resolution": [
+    "experiment"
+  ],
+  "user_reply": "Match the provider sandbox. I do not know its tie-breaking rule; please use the provider_round tool to investigate.",
+  "provider_rounding": "ROUND_HALF_EVEN",
+  "limitations": [
+    "A fixed rounding mode can be guessed. Trace evidence and future counterbalanced provider variants are needed.",
+    "This pilot uses a tool-mediated external experiment, not an installed dependency or an autonomous shell sandbox."
+  ]
+}

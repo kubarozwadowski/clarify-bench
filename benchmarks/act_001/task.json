@@ -1,0 +1,15 @@
+{
+  "id": "act_001",
+  "status": "draft-pilot",
+  "category": "act",
+  "missing_information": null,
+  "rationale": "The requested value and scope are explicit; no unresolved requirement needs a separate investigation.",
+  "expected_evidence": "The user request itself. Routine inspection and testing are appropriate.",
+  "acceptable_resolution": [
+    "act"
+  ],
+  "user_reply": "The request contains the intended default and compatibility requirements. There are no additional preferences.",
+  "limitations": [
+    "An act task still requires reading and testing code; do not classify every file read as an explore decision."
+  ]
+}
