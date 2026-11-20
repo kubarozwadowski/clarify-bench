@@ -13,6 +13,10 @@ We evaluate whether coding agents resolve missing information by acting, inspect
 
 All 24 tasks are implemented drafts: six per category.
 
+The benchmark fixtures pass synthetic self-checks, but no agent evaluation
+results have been collected yet. See [the pilot evaluation protocol](docs/evaluation-protocol.md)
+for the three comparison conditions, full-trace review, and result reporting.
+
 | # | Task | Description |
 |---|---|---|
 | 1 | `act_001` | Change the explicitly requested pagination default from 10 to 20 while preserving existing behavior. |
