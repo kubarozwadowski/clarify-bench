@@ -17,7 +17,8 @@ The benchmark fixtures pass synthetic self-checks. An exploratory local-model
 pilot on all 24 tasks is reported in [pilot results](docs/pilot-results-2026-11-20.md).
 See [the evaluation protocol](docs/evaluation-protocol.md) for the three
 comparison conditions, full-trace review, and result reporting. The local
-model adapter is at `runner/local_agent.py`.
+model adapter is at `runner/local_agent.py`, and `runner/claude_agent.py` runs
+Claude Code in a Docker container that can see only the task workspace.
 
 | # | Task | Description |
 |---|---|---|

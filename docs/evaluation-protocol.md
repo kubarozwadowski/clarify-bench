@@ -70,6 +70,41 @@ Python without OS process isolation, and one local model with one repeat does
 not establish general effects. Do not mix its results with a hosted model's
 results in one comparison.
 
+For an **isolated Claude Code run**, `runner/claude_agent.py` runs each task
+in a Docker container that mounts only that run's `workspace/`:
+
+```sh
+claude setup-token                       # once; then export CLAUDE_CODE_OAUTH_TOKEN=<token>
+python3 runner/claude_agent.py --build   # once; builds the clarify-bench-agent image
+python3 runner/claude_agent.py --model claude-sonnet-5-5 --group runs/claude-pilot-001
+```
+
+The agent gets Claude Code's `Bash`, `Read`, `Edit`, `Write`, `Glob`, and
+`Grep` inside the container, plus `ask_user` and `probe_provider`. Those two
+are answered by a tool server in the driver process on the host, so
+`task.json`, private tests, and provider fixtures never enter the container.
+The driver saves the raw Claude Code stream as `control/claude_stream.jsonl`
+and a normalized `control/agent_trace.jsonl` in the local adapter's event
+format (`Read` becomes `read_file`, `Edit`/`Write` become `write_file`), so the
+two summary commands below work on either kind of group. `--tasks`, `--trials`,
+and `--timeout` work as in the local adapter. Remaining limits:
+
+- The container has internet access, which Claude Code needs. Each run's
+  `agent_result.json` lists shell commands that look like network use in
+  `network_commands`; review any that appear.
+- The auth token is an environment variable inside the container, so the
+  agent's shell can read it.
+- Claude Code offers no temperature or seed setting; the seed only fixes
+  condition order.
+- Claude Code does most file work through `Bash` (`cat file`,
+  `cat > file <<EOF`, `sed -i`). The driver adds a `read_file` or `write_file`
+  event after each such command, marked `"derived_from": "bash"`. This is a
+  text match on workspace file names, so an unusual command can be missed or
+  miscounted; confirm against the `bash` event when a run matters. To rebuild
+  a finished group's traces from the saved stream after changing these rules:
+  `python3 runner/claude_agent.py --rebuild runs/claude-pilot-001`.
+- Grading still runs the agent's Python on the host after the container exits.
+
 After the run, generate two distinct summaries:
 
 ```sh
